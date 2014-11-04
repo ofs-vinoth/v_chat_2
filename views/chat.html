@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<title>Chat Sample</title>
+		<link rel="stylesheet" href="/stylesheets/style.css">
+		<link rel="stylesheet" href="/stylesheets/chat.css">
+		<link rel="stylesheet" href="/stylesheets/menu.css">
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/lib/jquery-1.7.min.js"></script>
+		<script src="/javascripts/chatroom.js"></script>
+	</head>
+	<body>
+		<h1>Chat</h1>
+		<label for="userName">User name: (Hit Enter) </label>
+		<input id="userName" type="text" size="30">
+		<span id="feedback"> </span>
+		<div id="content" width="100%">
+			<div id="tab-container">
+				<ul id="menu-container">
+					
+				</ul>
+			</div>	
+			<div id="main-container" class="main-container">
+				
+			</div>
+			<div id="post" class="feedPost">
+				<input id="msg" type="text" value="Text Feed or URL Feed" class="txtFeed">
+				<input id="btnSendMsg" type="button" value="post" class="btnFeedPost" >	  
+			</div>
+		</div>
+	</body>
+</html>
