@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Screenshots from Videos with HTML5 CANVAS | TechSlides</title>
+<style>
+#drop {
+	border: 5px dotted #000;
+	margin-bottom: 20px;
+	padding: 10px;
+	margin: 30px 0px;
+}
+.block {
+	width:400px;
+	float:left;
+}
+.block *{
+	float:left;
+}
+video {
+	clear: both;
+	display: block;
+	width: 50%;
+}
+</style>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-941940-28']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+</head>
+<body>
+
+<h1>HTML5 Drag and Drop Local Video Files for Screenshots</h1>
+
+<p>Drop local video files on to the page and play them with HTML5 video player.  You can control the speed and take a screenshot at any point.  You can also control the size of the screenshot and save the image to your computer.  Everything is done on the client side using HTML5 Video, Canvas, Blob Url, and more. <a href="http://techslides.com/make-screenshots-with-html5-video/">Back to Article</a></p>
+
+
+<div id="message"></div>
+
+<div id="drop">
+	<input type="file" accept="video/*"/> <strong>or drag and drop the video here...</strong>
+</div>
+
+<div class="block">
+	<label>Playback Rate</label>
+	<input type="range" id="speed" min="0" max="3" step=".1" value="1">
+	<span id="speedrate">1</span>
+</div>
+
+<div class="block">
+	<label>ScreenShot Size</label>
+	<button id="screenshot-button">Create Screenshot</button>
+	<button id="screenshot-button">stop Screenshot</button>
+	<input type="range" id="size" min="1" max="4" step="1" value="1"><span id="screenshotsize">1</span>
+</div>
+
+<video controls autoplay></video>
+<img id="image" style="clear:both;display:none;">
+
+
+<script>
+(function loadInit(win) {
+
+	var v = document.querySelector('video');
+	var m = document.querySelector('#message');
+	var i = document.querySelector('input');
+
+	//main process function
+	function process(file){
+	    var fileURL = URL.createObjectURL(file);
+	    v.src = fileURL;
+	    m.style.display = "none";
+	}
+
+    /* Drag drop stuff */
+    window.ondragover = function(e){ e.preventDefault(); }
+    window.ondrop = function(e){
+	    e.preventDefault();
+	    m.innerHTML = "Reading...";
+	    var length = e.dataTransfer.items.length;
+	    if(length > 1){
+	    	m.innerHTML = "Please only drop 1 file.";
+	    } else {
+	    	process(e.dataTransfer.files[0]);
+	    }
+	}
+
+	//var URL = win.URL || win.webkitURL;
+	if (!URL) {
+	    m.innerHTML = 'Your browser is not <a href="http://caniuse.com/bloburls">supported</a>!';
+	    return;
+	}
+
+	var playFile = function playInit(event) {
+
+		var file = this.files[0];
+
+		//check if video can be played
+		if(v.canPlayType(file.type) != ""){
+			process(file);
+		} else {
+			m.innerHTML = "This video file format is not supported."
+		}
+
+	};
+
+	i.addEventListener('change', playFile, false);
+
+
+var speed = document.getElementById("speed");
+var speedrate = document.getElementById("speedrate");
+
+
+//SCREENSHOTS
+//for screenshot options and creation
+var size = document.getElementById("size");
+var image = document.getElementById('image');
+var screenshotsize = document.getElementById("screenshotsize");
+
+//control size of screenshot
+size.addEventListener('change', function(){
+	var s = this.value;
+	screenshotsize.innerHTML = s;
+}, false);
+
+
+function capture() {
+		canvas = document.createElement("canvas");
+		var w = v.clientWidth * size.value;
+		var h = v.clientHeight * size.value;
+		canvas.width = w;
+		canvas.height = h;
+		var context = canvas.getContext('2d');
+		context.drawImage(v,0,0,w,h);
+
+		//var img = document.createElement("img");
+		//lets make a screenshot
+		//img.src = canvas.toDataURL();
+		//img.style.display = "block";
+		
+		var a = document.createElement('a');
+		a.setAttribute("download", "YourFileName.jpeg");
+		a.setAttribute("href", canvas.toDataURL());
+		var textnode = document.createTextNode("Water" + captueImg);        
+		a.appendChild(textnode);     
+		
+		document.body.appendChild(a); 
+		document.body.appendChild(document.createElement('br')); 
+		captueImg++;
+		if(captueImg < 60) {
+			setTimeout(function(){
+				capture();
+			}, .01);
+		}
+}
+var captueImg = 0;
+
+var screenshot = document.getElementById("screenshot-button");
+screenshot.addEventListener('click', function(){
+
+	
+setTimeout(function(){
+				capture();
+			}, 1);
+
+},false);
+
+
+
+//control play speed
+speed.addEventListener('change', function(){
+	var s = this.value;
+	v.playbackRate = s;
+	speedrate.innerHTML = s;
+}, false);
+
+
+
+
+//base 64 encode
+function encode64(input) {
+	var output = "", i = 0, l = input.length,
+	key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", 
+	chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+	while (i < l) {
+		chr1 = input.charCodeAt(i++);
+		chr2 = input.charCodeAt(i++);
+		chr3 = input.charCodeAt(i++);
+		enc1 = chr1 >> 2;
+		enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+		enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+		enc4 = chr3 & 63;
+		if (isNaN(chr2)) enc3 = enc4 = 64;
+		else if (isNaN(chr3)) enc4 = 64;
+		output = output + key.charAt(enc1) + key.charAt(enc2) + key.charAt(enc3) + key.charAt(enc4);
+	}
+	return output;
+}
+
+
+
+}(window));
+</script>
+</body>
+</html>
